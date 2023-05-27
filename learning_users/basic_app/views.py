@@ -141,10 +141,11 @@ def user_list(request):
         except (get_user_model().DoesNotExist, UserProfileInfo.DoesNotExist):
             # Handle the case when the user or recipient profile does not exist
             pass
-
+    transactions = Transaction.objects.all()
     users = UserProfileInfo.objects.all()
     context = {
-        'users': users
+        'users': users,
+        'transactions': transactions,
     }
     return render(request, 'basic_app/user_list.html', context)
 
