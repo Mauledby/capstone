@@ -1,0 +1,28 @@
+{% extends 'basic_app/base.html' %}
+{% load static %}
+
+{% block body_block %}
+    <div class="container custom-container">
+        <div class="jumbotron">
+            <h1>User List</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.userprofileinfo.first_name }}</td>
+                            <td>{{ user.userprofileinfo.last_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
