@@ -54,3 +54,15 @@ class UserProfileInfo(models.Model):
 
     def __str__(self):
         return self.user.email
+
+
+class Transaction(models.Model):
+    transactionId = models.CharField(max_length=100)
+    User = models.ForeignKey(User, on_delete=models.CASCADE)
+    transactionType = models.CharField(max_length=100)
+    amount = models.FloatField()
+    currency = models.CharField(max_length=100)
+    timestamp = models.DateTimeField()
+
+    def __str__(self):
+        return self.transactionId

@@ -46,10 +46,16 @@
   }
 
   /* Add spacing between links */
-  .list-group-item:not(:last-child) {
+  .list-group-item:not(:valid) {
+    margin-left: 20px;
     margin-bottom: 10px;
     max-width: 80%;
   }
+  .sidebar-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 </style>
 <body>
     <div class="d-flex" id="wrapper">
@@ -60,17 +66,18 @@
                 <br>Wallet
             </div>
             <div class="list-group list-group-flush">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'basic_app:dashboard' %}" class="list-group-item list-group-item-action sidebar-link {% if 'dashboard' in request.path %}active-link{% endif %}">Dashboard</a>
-                    <a href="{% url 'basic_app:dashboard' %}" class="list-group-item list-group-item-action sidebar-link {% if 'requests' in request.path %}active-link{% endif %}">Requests</a>
-                    <a href="{% url 'basic_app:userlist' %}" class="list-group-item list-group-item-action sidebar-link {% if 'userlist' in request.path %}active-link{% endif %}">Users</a>
-                    <a href="{% url 'logout' %}" class="list-group-item list-group-item-action sidebar-link {% if 'logout' in request.path %}active-link{% endif %}">Logout</a>
-                {% else %}
-                    <a href="{% url 'basic_app:user_login' %}" class="list-group-item list-group-item-action sidebar-link {% if 'user_login' in request.path %}active-link{% endif %}">Login</a>
-                    <a href="{% url 'basic_app:register' %}" class="list-group-item list-group-item-action sidebar-link {% if 'register' in request.path %}active-link{% endif %}">Register</a>
-                {% endif %}
-                
-            </div>
+              {% if user.is_authenticated %}
+                  <a href="{% url 'basic_app:dashboard' %}" class="list-group-item list-group-item-action sidebar-link {% if 'dashboard' in request.path %}active-link{% endif %}">Dashboard</a>
+                  <a href="{% url 'basic_app:dashboard' %}" class="list-group-item list-group-item-action sidebar-link {% if 'dashboard' in request.path %}active-link{% endif %}">Requests</a>
+                  <a href="{% url 'basic_app:userlist' %}" class="list-group-item list-group-item-action sidebar-link {% if 'userlist' in request.path %}active-link{% endif %}">Users</a>
+                  <a href="{% url 'logout' %}" class="list-group-item list-group-item-action sidebar-link mt-auto {% if 'logout' in request.path %}active-link{% endif %}">Logout</a>
+              {% else %}
+                  <a href="{% url 'basic_app:user_login' %}" class="list-group-item list-group-item-action sidebar-link {% if 'user_login' in request.path %}active-link{% endif %}">Login</a>
+                  <a href="{% url 'basic_app:register' %}" class="list-group-item list-group-item-action sidebar-link {% if 'register' in request.path %}active-link{% endif %}">Register</a>
+              {% endif %}
+              
+          </div>
+          
         </div>
         <!-- /#sidebar-wrapper -->
 

@@ -76,7 +76,7 @@ def user_login(request):
                 login(request,user)
                 # Send the user back to some page.
                 # In this case their homepage.
-                return render(request, 'basic_app/login.html', {})
+                return render(request, 'basic_app/dashboard.html', {})
             else:
                 # If account is not active:
                 return HttpResponse("Your account is not active.")
