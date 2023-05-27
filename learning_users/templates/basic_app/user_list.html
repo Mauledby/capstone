@@ -11,7 +11,8 @@
                         <th>Email</th>
                         <th>First Name</th>
                         <th>Last Name</th>
-                        <th>point_balance</th>
+                        <th>Point Balance</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -21,42 +22,99 @@
                             <td>{{ user.first_name }}</td>
                             <td>{{ user.last_name }}</td>
                             <td>{{ user.point_balance }}</td>
+                            <td>
+                                <button class="btn btn-primary awardPointsButton" data-recipient="{{ user.user.email }}">Award Points</button>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        <button class="btn btn-primary" id="awardPointsButton">Award Points</button>
-        <div class="modal" id="awardPointsModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
+    </div>
+
+    <div class="modal" id="awardPointsModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">Award Points</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+                    <h5 class="modal-title">Award Points</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
-                  <!-- Add the form elements for awarding points -->
-                  <form method="post" action="">
-                    {% csrf_token %}
-                    <!-- Form fields for awarding points go here -->
-                    <div class="form-group">
-                      <label for="recipient">Recipient:</label>
-                      <select class="form-control" id="recipient" name="recipient">
-                        <!-- Add options for recipient selection -->
-                        <!-- You can dynamically populate the options using Django template tags -->
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <label for="points">Points:</label>
-                      <input type="number" class="form-control" id="points" name="points">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                  </form>
+                    <!-- Add the form elements for awarding points -->
+                    <form id="awardPointsForm" method="post" action="">
+                        {% csrf_token %}
+                        <!-- Form fields for awarding points go here -->
+                        <div class="form-group">
+                            <label for="recipient">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient" name="recipient" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="points">Points:</label>
+                            <input type="number" class="form-control" id="points" name="points">
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Date:</label>
+                            <input type="text" class="form-control" id="date" name="date" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">Time:</label>
+                            <input type="text" class="form-control" id="time" name="time" readonly>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
                 </div>
-              </div>
             </div>
-          </div>
+        </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to handle form submission
+            $('#awardPointsForm').submit(function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Retrieve the form data
+                var formData = new FormData(this);
+                formData.append('recipient', $('#recipient').val());
+
+                // Perform the points transaction
+                $.ajax({
+                    url: '/basic_app/user_list/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        // Handle the success response
+                        console.log(response); // Log the response for debugging purposes
+                        // Update the point balance in the table or perform any other necessary actions
+                        $('#awardPointsModal').modal('hide'); // Hide the modal
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle the error response
+                        console.error(error); // Log the error for debugging purposes
+                        // Display an error message or perform any other necessary actions
+                    }
+                });
+            });
+
+            // Function to handle "Award Points" button click
+            $('.awardPointsButton').click(function() {
+                var recipient = $(this).data('recipient');
+                $('#recipient').val(recipient);
+
+                // Auto-fill date and time fields with current date and time
+                var currentDate = new Date();
+                var dateString = currentDate.toLocaleDateString();
+                var timeString = currentDate.toLocaleTimeString();
+                $('#date').val(dateString);
+                $('#time').val(timeString);
+
+                $('#awardPointsModal').modal('show');
+            });
+        });
+    </script>
 {% endblock %}

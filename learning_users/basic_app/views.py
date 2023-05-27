@@ -114,3 +114,21 @@ def user_list(request):
         'users': users
     }
     return render(request, 'basic_app/user_list.html', context)
+
+def award_points(request):
+    if request.method == 'POST':
+        recipient_email = request.POST.get('recipient')
+        points = int(request.POST.get('points'))
+        recipient = User.objects.get(user__email=recipient_email)
+
+        # Update the recipient's point balance
+        recipient.point_balance += points
+        recipient.save()
+
+        # Create a record of the points awarded
+        current_datetime = datetime.now()
+        # Add your code here to save the points awarded record
+
+        return redirect('user_list')
+
+    return redirect('user_list')

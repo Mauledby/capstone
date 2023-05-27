@@ -8,4 +8,5 @@ urlpatterns = [
     path('user_login/', views.user_login, name='user_login'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('user_list/', views.user_list, name='userlist'),
+    path('award_points/<int:recipient_id>/', views.award_points, name='award_points'),
 ]
