@@ -45,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     
 class UserProfileInfo(models.Model):
-
+    profile_id = models.AutoField(primary_key=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)

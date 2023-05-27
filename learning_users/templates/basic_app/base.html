@@ -1,13 +1,11 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-  <head>
-   
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
     <title>Wallet</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
     <script src="{% static 'js/jquery.min.js' %}"></script>
@@ -16,57 +14,93 @@
     <link href="{% static 'css/styleBASE.css' %}" rel="stylesheet">
     <link rel="shortcut icon" href="{% static 'img/title.png' %}"/>
     <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
-
     <!-- Scrollbar Custom CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
-
     <!-- Bootstrap core JavaScript -->
     <!-- <script src="{% static 'js/jquery.min.js' %}"></script> -->
-
     <!-- Font Awesome JS -->    
     <script src="{% static 'bootstrap-4.4.1-dist/js/bootstrap.bundle.min.js' %}"></script>  
-
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>    
-  
-
     {% block headerinclude %}
     {% endblock %}
+</head>
+<!-- Style -->
+<style>
+  .bg-custom-color {
+    background-color: #FECC00;
+    /* Add any additional styles you want */
+  }
 
-  </head>
-<!-- inserted -->
+  .active-link {
+    background-color: #f8f9fa; /* Change this color to your desired active link color */
+  }
 
-<!-- ends here -->
+  /* Add styles for links */
+  .sidebar-link {
+    display: block;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
 
-  <body>
-    <nav class="navbar navbar-light bg-light" style="height: 80px;">
-      <div class="container d-flex justify-content-between align-items-center">
-        <div class="navbar-brand">
-          <img src="{% static 'img/btitle.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
-          Wallet
+  /* Add spacing between links */
+  .list-group-item:not(:last-child) {
+    margin-bottom: 10px;
+    max-width: 80%;
+  }
+</style>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-custom-color border-right" id="sidebar-wrapper">
+            <div class="sidebar-heading text-center">
+                <img src="{% static 'img/btitle.png' %}" width="110" height="100" class="d-inline-block align-top" alt="">
+                <br>Wallet
+            </div>
+            <div class="list-group list-group-flush">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'basic_app:dashboard' %}" class="list-group-item list-group-item-action sidebar-link {% if 'dashboard' in request.path %}active-link{% endif %}">Dashboard</a>
+                    <a href="{% url 'basic_app:dashboard' %}" class="list-group-item list-group-item-action sidebar-link {% if 'requests' in request.path %}active-link{% endif %}">Requests</a>
+                    <a href="{% url 'basic_app:userlist' %}" class="list-group-item list-group-item-action sidebar-link {% if 'userlist' in request.path %}active-link{% endif %}">Users</a>
+                    <a href="{% url 'logout' %}" class="list-group-item list-group-item-action sidebar-link {% if 'logout' in request.path %}active-link{% endif %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'basic_app:user_login' %}" class="list-group-item list-group-item-action sidebar-link {% if 'user_login' in request.path %}active-link{% endif %}">Login</a>
+                    <a href="{% url 'basic_app:register' %}" class="list-group-item list-group-item-action sidebar-link {% if 'register' in request.path %}active-link{% endif %}">Register</a>
+                {% endif %}
+                
+            </div>
         </div>
-        <div>
-          <ul class="navbar-nav flex-row">
-            {% if user.is_authenticated %}
-              <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
-              <li><a class="nav-link" href="{% url 'basic_app:dashboard' %}">Dashboard</a></li>
-            {% else %}
-              <li class="nav-item"><a class="nav-link" href="{% url 'basic_app:user_login' %}">Login</a></li>
-              <li class="nav-item ml-3"><a class="nav-link" href="{% url 'basic_app:register' %}">Register</a></li>
-            {% endif %}
-          </ul>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-light bg-light">
+                <button class="navbar-toggler" type="button" id="menu-toggle">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+            <div class="container-fluid">
+                {% block body_block %}
+                {% endblock %}
+            </div>
         </div>
-      </div>
-    </nav>
-    
-    
-    
-    
-    <div class="container">
-    {% block body_block %}
-    {% endblock %}
+        <!-- /#page-content-wrapper -->
     </div>
+    <!-- /#wrapper -->
 
-
-  </body>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'bootstrap-4.4.1-dist/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- Custom scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script>
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+    </script>
+</body>
 </html>

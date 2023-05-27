@@ -11,14 +11,16 @@
                         <th>Email</th>
                         <th>First Name</th>
                         <th>Last Name</th>
+                        <th>point_balance</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for user in users %}
                         <tr>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.userprofileinfo.first_name }}</td>
-                            <td>{{ user.userprofileinfo.last_name }}</td>
+                            <td>{{ user.user.email }}</td>
+                            <td>{{ user.first_name }}</td>
+                            <td>{{ user.last_name }}</td>
+                            <td>{{ user.point_balance }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
