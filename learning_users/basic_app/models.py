@@ -56,13 +56,13 @@ class UserProfileInfo(models.Model):
         return self.user.email
 
 
-class Transaction(models.Model):
-    transactionId = models.CharField(max_length=100)
-    User = models.ForeignKey(User, on_delete=models.CASCADE)
-    transactionType = models.CharField(max_length=100)
-    amount = models.FloatField()
-    currency = models.CharField(max_length=100)
-    timestamp = models.DateTimeField()
 
+class Transaction(models.Model):
+    transactionID = models.AutoField(primary_key=True)
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE)
+    points = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    date = models.DateField(auto_now_add=True)
+    time = models.TimeField(auto_now_add=True)
+    
     def __str__(self):
-        return self.transactionId
+        return str(self.transactionID)

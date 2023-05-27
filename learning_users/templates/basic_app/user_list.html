@@ -1,3 +1,4 @@
+<!-- user_list.html -->
 {% extends 'basic_app/base.html' %}
 {% load static %}
 
@@ -5,7 +6,7 @@
     <div class="container custom-container">
         <div class="jumbotron">
             <h1>User List</h1>
-            <table class="table">
+            <table id="users" class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>Email</th>
@@ -23,7 +24,7 @@
                             <td>{{ user.last_name }}</td>
                             <td>{{ user.point_balance }}</td>
                             <td>
-                                <button class="btn btn-primary awardPointsButton" data-recipient="{{ user.user.email }}">Award Points</button>
+                                <button class="btn btn-primary awardPointsButton" data-recipient="{{ user.user.id }}">Award Points</button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -70,15 +71,16 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         $(document).ready(function() {
             // Function to handle form submission
             $('#awardPointsForm').submit(function(event) {
                 event.preventDefault(); // Prevent the default form submission
-
+                
                 // Retrieve the form data
                 var formData = new FormData(this);
-                formData.append('recipient', $('#recipient').val());
+                formData.set('recipient', $('#recipient').val());
 
                 // Perform the points transaction
                 $.ajax({
@@ -88,10 +90,18 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        // Handle the success response
-                        console.log(response); // Log the response for debugging purposes
+                        var awardedPoints = parseFloat($('#points').val());
+                        var recipientID = $('#recipient').val();
+                        var recipientPointBalanceCell = $('table#users td:contains("' + recipientID + '")').siblings(':nth-child(4)');
+                        console.log(recipientPointBalanceCell); // Check the selected cell
+                        console.log(recipientPointBalanceCell.length); // Check the length of the selected cell
+                        var currentPointBalance = parseFloat(recipientPointBalanceCell.text());
+                        var newPointBalance = currentPointBalance + awardedPoints;
+                        recipientPointBalanceCell.text(newPointBalance.toFixed(2)); // Update the point balance in the table
+                        console.log(awardedPoints); // Log the response for debugging purposes
                         // Update the point balance in the table or perform any other necessary actions
                         $('#awardPointsModal').modal('hide'); // Hide the modal
+                        window.location.reload()
                     },
                     error: function(xhr, status, error) {
                         // Handle the error response
@@ -99,10 +109,11 @@
                         // Display an error message or perform any other necessary actions
                     }
                 });
+                
             });
 
             // Function to handle "Award Points" button click
-            $('.awardPointsButton').click(function() {
+            $(document).on('click', '.awardPointsButton', function() {
                 var recipient = $(this).data('recipient');
                 $('#recipient').val(recipient);
 

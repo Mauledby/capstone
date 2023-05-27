@@ -1,12 +1,12 @@
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from basic_app.forms import UserForm, UserProfileInfoForm
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect, HttpResponse
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect
-from .models import User, UserProfileInfo
+from .models import User, UserProfileInfo,Transaction
 
 
 def index(request):
@@ -70,23 +70,23 @@ def user_login(request):
         user = authenticate(request, email=email, password=password)
 
         if user:
-            #Check it the account is active
+            # Check if the account is active
             if user.is_active:
                 # Log the user in.
-                login(request,user)
+                login(request, user)
                 # Send the user back to some page.
                 # In this case their homepage.
                 return render(request, 'basic_app/dashboard.html', {})
             else:
-                # If account is not active:
+                # If the account is not active:
                 return HttpResponse("Your account is not active.")
         else:
             print("Someone tried to login and failed.")
-            print("They used email: {} and password: {}".format(email,password))
-            return HttpResponse("Invalid login details supplied."+email+" "+password)
+            print("They used email: {} and password: {}".format(email, password))
+            return HttpResponse("Invalid login details supplied." + email + " " + password)
 
     else:
-        #Nothing has been provided for username or password.
+        # Nothing has been provided for username or password.
         return render(request, 'basic_app/login.html', {})
 
 
@@ -107,28 +107,59 @@ def dashboard(request):
 
     return render(request, 'basic_app/dashboard.html', context)
 
+
 @login_required
 def user_list(request):
+    if request.method == 'POST':
+        recipient_id = request.POST.get('recipient')
+        points = float(request.POST.get('points'))
+
+        try:
+            user = get_user_model().objects.get(id=recipient_id)
+            recipient_profile = UserProfileInfo.objects.get(user_id=user.id)
+            recipient_profile.point_balance += points
+            recipient_profile.save()
+
+            # Create a record of the points awarded
+            transaction = Transaction.objects.create(recipient=user, points=points)
+            # Perform any additional actions related to the transaction
+
+            # Fetch the updated user list
+            users = UserProfileInfo.objects.all()
+            user_data = []
+            for user in users:
+                user_data.append({
+                    'email': user.user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'point_balance': user.point_balance,
+                })
+
+            # Return the updated user list as JSON response
+            return JsonResponse({'users': user_data})
+
+        except (get_user_model().DoesNotExist, UserProfileInfo.DoesNotExist):
+            # Handle the case when the user or recipient profile does not exist
+            pass
+
     users = UserProfileInfo.objects.all()
     context = {
         'users': users
     }
     return render(request, 'basic_app/user_list.html', context)
 
-def award_points(request):
-    if request.method == 'POST':
-        recipient_email = request.POST.get('recipient')
-        points = int(request.POST.get('points'))
-        recipient = User.objects.get(user__email=recipient_email)
+def store_transaction(request):
+    if request.method == 'POST' and request.is_ajax():
+        recipient = request.POST.get('recipient')
+        points = float(request.POST.get('points'))
+        date = request.POST.get('date')
+        time = request.POST.get('time')
 
-        # Update the recipient's point balance
-        recipient.point_balance += points
-        recipient.save()
+        # Update the recipient's point balance in the database
+        user = User.objects.get(email=recipient)
+        user.point_balance += points
+        user.save()
 
-        # Create a record of the points awarded
-        current_datetime = datetime.now()
-        # Add your code here to save the points awarded record
-
-        return redirect('user_list')
-
-    return redirect('user_list')
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request'})
